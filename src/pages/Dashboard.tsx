@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadProfile, loadMetrics, loadRecommendations, saveRecommendations, addFeedback } from "@/lib/storage";
 import { computeBaseline, computeReadiness, computeBurnoutRisk, generateDailyPlan, generateRecommendations } from "@/lib/agentLoop";
-import { UserProfile, DailyMetrics, AgentRecommendation, ReadinessScore, BurnoutRisk, DailyPlan } from "@/types";
+import { UserProfile, DailyMetrics, AgentRecommendation, ReadinessScore, BurnoutRisk, DailyPlan, Baseline } from "@/types";
 import { MobileLayout } from "@/components/MobileLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { AgentRecommendationCard } from "@/components/AgentRecommendationCard";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PageTransition } from "@/components/PageTransition";
+import { ProactiveMonitor } from "@/components/ProactiveMonitor";
 import { Heart, Activity, Moon, Zap, TrendingUp, Flame, Shield, Target, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -24,6 +25,8 @@ export default function Dashboard() {
   const [burnoutRisk, setBurnoutRisk] = useState<BurnoutRisk | null>(null);
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [recommendations, setRecommendations] = useState<AgentRecommendation[]>([]);
+  const [baseline, setBaseline] = useState<Baseline | null>(null);
+  const [showProactiveCall, setShowProactiveCall] = useState(false);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -41,6 +44,7 @@ export default function Dashboard() {
 
     const last7 = allMetrics.slice(-7);
     const baseline = computeBaseline(allMetrics);
+    setBaseline(baseline);
 
     const ready = computeReadiness(today, baseline, last7);
     setReadiness(ready);
@@ -245,6 +249,25 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
+          {/* Proactive Monitoring Agent */}
+          {baseline && (
+            <ProactiveMonitor 
+              metrics={metrics}
+              baseline={baseline}
+              onCallInitiated={() => {
+                setShowProactiveCall(true);
+                navigate("/coach?proactiveCall=true");
+              }}
+            />
+          )}
+        </motion.div>
+
+        {/* Today's Plan */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+        >
           <Card className="shadow-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-4">
@@ -273,7 +296,7 @@ export default function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45 }}
+            transition={{ delay: 0.5 }}
             className="space-y-3"
           >
             <div className="flex items-center justify-between">
