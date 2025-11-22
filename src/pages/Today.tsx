@@ -27,60 +27,64 @@ export default function Today() {
   const [breathingRec, setBreathingRec] = useState<AgentRecommendation | null>(null);
 
   useEffect(() => {
-    const prof = loadProfile();
-    if (!prof.onboardingComplete) {
-      navigate("/onboarding");
-      return;
-    }
-    setProfile(prof);
+    const loadTodayData = async () => {
+      const prof = loadProfile();
+      if (!prof.onboardingComplete) {
+        navigate("/onboarding");
+        return;
+      }
+      setProfile(prof);
 
-    const allMetrics = loadMetrics();
-    const today = allMetrics[allMetrics.length - 1];
-    setTodayMetrics(today);
+      const allMetrics = loadMetrics();
+      const today = allMetrics[allMetrics.length - 1];
+      setTodayMetrics(today);
 
-    const last7 = allMetrics.slice(-7);
-    setLast7Days(last7);
-    
-    const baseline = computeBaseline(allMetrics);
-    setBaseline(baseline);
+      const last7 = allMetrics.slice(-7);
+      setLast7Days(last7);
+      
+      const baseline = computeBaseline(allMetrics);
+      setBaseline(baseline);
 
-    const plan = generateDailyPlan(prof, today, last7, baseline);
-    setDailyPlan(plan);
+      const plan = generateDailyPlan(prof, today, last7, baseline);
+      setDailyPlan(plan);
 
-    // Load calendar events
-    const allEvents = loadCalendarEvents();
-    const todayStr = new Date().toISOString().split('T')[0];
-    const now = new Date();
-    
-    const todaysEvents = allEvents
-      .filter(event => {
-        const eventDate = new Date(event.start).toISOString().split('T')[0];
-        return eventDate === todayStr;
-      })
-      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-    setTodayEvents(todaysEvents);
-    
-    const upcoming = allEvents
-      .filter(event => new Date(event.start) > now)
-      .slice(0, 10);
-    setUpcomingEvents(upcoming);
+      // Load calendar events
+      const allEvents = loadCalendarEvents();
+      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      
+      const todaysEvents = allEvents
+        .filter(event => {
+          const eventDate = new Date(event.start).toISOString().split('T')[0];
+          return eventDate === todayStr;
+        })
+        .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+      setTodayEvents(todaysEvents);
+      
+      const upcoming = allEvents
+        .filter(event => new Date(event.start) > now)
+        .slice(0, 10);
+      setUpcomingEvents(upcoming);
 
-    // Check for breathing recommendations
-    const orchestrator = getAgentOrchestrator();
-    const recommendations = orchestrator.analyze({
-      profile: prof,
-      today,
-      last7Days: last7,
-      baseline: baseline,
-      allMetrics,
-    });
+      // Check for breathing recommendations
+      const orchestrator = getAgentOrchestrator();
+      const recommendations = await orchestrator.analyze({
+        profile: prof,
+        today,
+        last7Days: last7,
+        baseline: baseline,
+        allMetrics,
+      });
 
-    const breathingRecs = recommendations.filter(
-      r => r.agent === "BreathingCoachAgent" && r.priority === "high"
-    );
-    if (breathingRecs.length > 0) {
-      setBreathingRec(breathingRecs[0]);
-    }
+      const breathingRecs = recommendations.filter(
+        r => r.agent === "BreathingCoachAgent" && r.priority === "high"
+      );
+      if (breathingRecs.length > 0) {
+        setBreathingRec(breathingRecs[0]);
+      }
+    };
+
+    loadTodayData();
   }, [navigate]);
 
   if (!profile || !dailyPlan || !todayMetrics || !baseline) {

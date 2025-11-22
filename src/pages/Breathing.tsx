@@ -15,28 +15,32 @@ export default function Breathing() {
   const [todaySessions, setTodaySessions] = useState(0);
 
   useEffect(() => {
-    const metrics = loadMetrics();
-    const profile = loadProfile();
-    const baseline = loadBaseline(metrics);
-    const last7Days = metrics.slice(-7);
-    const today = metrics[metrics.length - 1];
+    const fetchRecommendations = async () => {
+      const metrics = loadMetrics();
+      const profile = loadProfile();
+      const baseline = loadBaseline(metrics);
+      const last7Days = metrics.slice(-7);
+      const today = metrics[metrics.length - 1];
 
-    const orchestrator = getAgentOrchestrator();
-    const recommendations = orchestrator.analyze({
-      profile,
-      today,
-      last7Days,
-      baseline,
-      allMetrics: metrics,
-    });
+      const orchestrator = getAgentOrchestrator();
+      const recommendations = await orchestrator.analyze({
+        profile,
+        today,
+        last7Days,
+        baseline,
+        allMetrics: metrics,
+      });
 
-    const breathingRecs = recommendations.filter(
-      r => r.agent === "BreathingCoachAgent"
-    );
-    setBreathingRecommendations(breathingRecs);
+      const breathingRecs = recommendations.filter(
+        r => r.agent === "BreathingCoachAgent"
+      );
+      setBreathingRecommendations(breathingRecs);
 
-    const sessions = getTodayBreathingSessions();
-    setTodaySessions(sessions.length);
+      const sessions = getTodayBreathingSessions();
+      setTodaySessions(sessions.length);
+    };
+
+    fetchRecommendations();
   }, []);
 
   const handleComplete = (type: string, duration: number, cycles: number) => {

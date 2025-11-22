@@ -25,45 +25,49 @@ export default function Dashboard() {
   const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
 
   useEffect(() => {
-    const prof = loadProfile();
-    if (!prof.onboardingComplete) {
-      navigate("/onboarding");
-      return;
-    }
-    setProfile(prof);
+    const loadDashboardData = async () => {
+      const prof = loadProfile();
+      if (!prof.onboardingComplete) {
+        navigate("/onboarding");
+        return;
+      }
+      setProfile(prof);
 
-    const allMetrics = loadMetrics();
-    setMetrics(allMetrics);
+      const allMetrics = loadMetrics();
+      setMetrics(allMetrics);
 
-    const today = allMetrics[allMetrics.length - 1];
-    setTodayMetrics(today);
+      const today = allMetrics[allMetrics.length - 1];
+      setTodayMetrics(today);
 
-    const last7 = allMetrics.slice(-7);
-    const baseline = computeBaseline(allMetrics);
+      const last7 = allMetrics.slice(-7);
+      const baseline = computeBaseline(allMetrics);
 
-    const ready = computeReadiness(today, baseline, last7);
-    setReadiness(ready);
+      const ready = computeReadiness(today, baseline, last7);
+      setReadiness(ready);
 
-    const risk = computeBurnoutRisk(last7, baseline);
-    setBurnoutRisk(risk);
+      const risk = computeBurnoutRisk(last7, baseline);
+      setBurnoutRisk(risk);
 
-    let recs = loadRecommendations();
-    const recTodayStr = new Date().toISOString().split("T")[0];
-    const hasRecsToday = recs.some((r) => r.createdAt.startsWith(recTodayStr));
-    if (!hasRecsToday) {
-      const newRecs = generateRecommendations(prof, today, last7, baseline);
-      recs = [...recs, ...newRecs];
-      saveRecommendations(recs);
-    }
-    setRecommendations(recs.slice(-10));
+      let recs = loadRecommendations();
+      const recTodayStr = new Date().toISOString().split("T")[0];
+      const hasRecsToday = recs.some((r) => r.createdAt.startsWith(recTodayStr));
+      if (!hasRecsToday) {
+        const newRecs = await generateRecommendations(prof, today, last7, baseline);
+        recs = [...recs, ...newRecs];
+        saveRecommendations(recs);
+      }
+      setRecommendations(recs.slice(-10));
 
-    // Load today's calendar events
-    const allEvents = loadCalendarEvents();
-    const todayStr = new Date().toISOString().split("T")[0];
-    const eventsToday = allEvents
-      .filter((event) => event.start.startsWith(todayStr))
-      .sort((a, b) => a.start.localeCompare(b.start));
-    setTodayEvents(eventsToday);
+      // Load today's calendar events
+      const allEvents = loadCalendarEvents();
+      const todayStr = new Date().toISOString().split("T")[0];
+      const eventsToday = allEvents
+        .filter((event) => event.start.startsWith(todayStr))
+        .sort((a, b) => a.start.localeCompare(b.start));
+      setTodayEvents(eventsToday);
+    };
+
+    loadDashboardData();
   }, [navigate]);
 
   const handleRefresh = async () => {
