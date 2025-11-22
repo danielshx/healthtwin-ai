@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { loadProfile } from "@/lib/storage";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
+import Today from "./pages/Today";
+import Recovery from "./pages/Recovery";
 import Timeline from "./pages/Timeline";
 import Insights from "./pages/Insights";
 import Coach from "./pages/Coach";
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/" element={<IndexRedirect />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/today" element={<Today />} />
+          <Route path="/recovery" element={<Recovery />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/coach" element={<Coach />} />

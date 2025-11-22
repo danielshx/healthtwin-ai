@@ -1,14 +1,14 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, BarChart3, MessageCircle, User, Activity } from "lucide-react";
+import { Home, Target, Shield, MessageCircle, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/insights", icon: BarChart3, label: "Insights" },
-  { path: "/timeline", icon: Activity, label: "Timeline" },
+  { path: "/today", icon: Target, label: "Today" },
+  { path: "/recovery", icon: Shield, label: "Recovery" },
   { path: "/coach", icon: MessageCircle, label: "Coach" },
-  { path: "/social", icon: User, label: "Profile" },
+  { path: "/settings", icon: User, label: "Settings" },
 ];
 
 export function MobileNav() {
