@@ -17,31 +17,62 @@ export class FitnessCoachAgent implements AIAgent {
     // Determine training recommendation
     if (burnout.level === "Red" || readiness.score < 40) {
       recommendations.push({
-        id: `fitness-${Date.now()}`,
+        id: `fitness-recovery-${Date.now()}`,
         createdAt: new Date().toISOString(),
         agent: "FitnessCoachAgent",
         type: "training",
-        title: "Recovery Day Recommended",
-        rationale: "Your body needs rest. Light walking or stretching only today.",
+        title: "30min Regenerations-Spaziergang",
+        rationale: "Dein Körper braucht Erholung. Ein leichter Spaziergang fördert die Durchblutung ohne zusätzlichen Stress.",
         priority: "high",
         actions: [
-          { label: "Accept Rest Day", kind: "accept" },
-          { label: "Light Activity", kind: "snooze" },
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Später", kind: "snooze" },
+        ],
+      });
+      
+      recommendations.push({
+        id: `fitness-stretch-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        agent: "FitnessCoachAgent",
+        type: "training",
+        title: "15min Mobility & Stretching",
+        rationale: "Sanfte Dehnübungen unterstützen deine Regeneration und verbessern die Beweglichkeit.",
+        priority: "medium",
+        actions: [
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Überspringen", kind: "reject" },
         ],
       });
     } else if (readiness.score >= 80 && today.trainingLoad < 60) {
-      const intensity = Math.random() > 0.5 ? "HIIT" : "Strength";
+      const workoutType = Math.random() > 0.5 
+        ? { title: "45min HIIT Training", desc: "Hochintensives Intervalltraining für maximale Fitness" }
+        : { title: "60min Krafttraining", desc: "Fokus auf Muskelaufbau und Kraftsteigerung" };
+      
       recommendations.push({
-        id: `fitness-${Date.now()}`,
+        id: `fitness-high-${Date.now()}`,
         createdAt: new Date().toISOString(),
         agent: "FitnessCoachAgent",
         type: "training",
-        title: `${intensity} Session Today`,
-        rationale: "You're well-recovered. Great day for a quality session.",
+        title: workoutType.title,
+        rationale: `Du bist top-erholt (${readiness.score}% Readiness). ${workoutType.desc}.`,
+        priority: "high",
+        actions: [
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Später", kind: "snooze" },
+        ],
+      });
+    } else if (readiness.score >= 60) {
+      recommendations.push({
+        id: `fitness-moderate-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        agent: "FitnessCoachAgent",
+        type: "training",
+        title: "30min Moderates Cardio",
+        rationale: "Gute Readiness für eine moderate Session. Joggen, Radfahren oder Schwimmen ideal.",
         priority: "medium",
         actions: [
-          { label: "Start Workout", kind: "accept" },
-          { label: "Do Later", kind: "snooze" },
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Später", kind: "snooze" },
         ],
       });
     }

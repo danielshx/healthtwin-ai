@@ -19,12 +19,12 @@ export class BreathingCoachAgent implements AIAgent {
         createdAt: new Date().toISOString(),
         agent: "BreathingCoachAgent",
         type: "stress",
-        title: "🫁 HRV Recovery Breathing",
-        rationale: `Your HRV is ${hrvDrop.toFixed(0)}% below baseline. A 5-minute coherent breathing session can help restore balance.`,
+        title: "5min HRV Kohärenz-Atmung",
+        rationale: `Dein HRV ist ${hrvDrop.toFixed(0)}% unter Baseline. Kohärente Atmung (5 Sek. ein, 5 Sek. aus) aktiviert deinen Parasympathikus.`,
         priority: "high",
         actions: [
-          { label: "Start Session", kind: "accept" },
-          { label: "Later", kind: "snooze" },
+          { label: "Jetzt starten", kind: "accept" },
+          { label: "Später", kind: "snooze" },
         ],
       });
     }
@@ -36,12 +36,26 @@ export class BreathingCoachAgent implements AIAgent {
         createdAt: new Date().toISOString(),
         agent: "BreathingCoachAgent",
         type: "stress",
-        title: "😤 Stress Relief Breathing",
-        rationale: `High stress detected (${today.stressScore}/100). Box breathing can help you regain calm in 3 minutes.`,
+        title: "3min Box Breathing",
+        rationale: `Hoher Stress erkannt (${today.stressScore}/100). Box Breathing (4-4-4-4) senkt Cortisol und beruhigt das Nervensystem.`,
         priority: "high",
         actions: [
-          { label: "Start Now", kind: "accept" },
-          { label: "Not Now", kind: "reject" },
+          { label: "Jetzt starten", kind: "accept" },
+          { label: "Nicht jetzt", kind: "reject" },
+        ],
+      });
+    } else if (today.stressScore > 50) {
+      recommendations.push({
+        id: `breathing_moderate_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        agent: "BreathingCoachAgent",
+        type: "stress",
+        title: "10min Atemmeditation",
+        rationale: "Moderater Stress. Eine kurze Atemmeditation hilft dir, fokussiert und ruhig zu bleiben.",
+        priority: "medium",
+        actions: [
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Überspringen", kind: "reject" },
         ],
       });
     }
@@ -54,11 +68,28 @@ export class BreathingCoachAgent implements AIAgent {
         createdAt: new Date().toISOString(),
         agent: "BreathingCoachAgent",
         type: "sleep",
-        title: "🌙 Sleep Preparation Breathing",
-        rationale: "Evening breathing exercise can improve sleep quality. Try 4-7-8 breathing before bed.",
+        title: "8min 4-7-8 Einschlaf-Atmung",
+        rationale: "Abendliche Atemübung verbessert Einschlafzeit. 4-7-8 Atmung aktiviert Entspannungsreaktion.",
         priority: "medium",
         actions: [
-          { label: "Start Session", kind: "accept" },
+          { label: "Vor dem Schlafengehen", kind: "accept" },
+        ],
+      });
+    }
+
+    // Morning energy breathing
+    if (hour >= 6 && hour < 10 && today.energyScore < 3) {
+      recommendations.push({
+        id: `breathing_morning_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        agent: "BreathingCoachAgent",
+        type: "training",
+        title: "5min Wim Hof Atmung",
+        rationale: "Niedrige Morgen-Energie. Wim Hof Atmung steigert Sauerstoffversorgung und Wachheit.",
+        priority: "medium",
+        actions: [
+          { label: "In Kalender eintragen", kind: "accept" },
+          { label: "Überspringen", kind: "reject" },
         ],
       });
     }
