@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadProfile, loadMetrics, loadCalendarEvents } from "@/lib/storage";
 import { computeBaseline, generateDailyPlan } from "@/lib/agentLoop";
-import { UserProfile, DailyMetrics, DailyPlan, CalendarEvent, Baseline } from "@/types";
+import { UserProfile, DailyMetrics, DailyPlan, CalendarEvent, Baseline, AgentRecommendation } from "@/types";
 import { MobileLayout } from "@/components/MobileLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { HealthRadar } from "@/components/HealthRadar";
@@ -10,8 +10,10 @@ import { ShortTermForecast } from "@/components/ShortTermForecast";
 import { PrioritizedActions } from "@/components/PrioritizedActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Target, Moon, Calendar, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Target, Moon, Calendar, CheckCircle2, Wind } from "lucide-react";
 import { motion } from "framer-motion";
+import { getAgentOrchestrator } from "@/agents/AgentOrchestrator";
 
 export default function Today() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function Today() {
   const [last7Days, setLast7Days] = useState<DailyMetrics[]>([]);
   const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
+  const [breathingRec, setBreathingRec] = useState<AgentRecommendation | null>(null);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -61,6 +64,23 @@ export default function Today() {
       .filter(event => new Date(event.start) > now)
       .slice(0, 10);
     setUpcomingEvents(upcoming);
+
+    // Check for breathing recommendations
+    const orchestrator = getAgentOrchestrator();
+    const recommendations = orchestrator.analyze({
+      profile: prof,
+      today,
+      last7Days: last7,
+      baseline: baseline,
+      allMetrics,
+    });
+
+    const breathingRecs = recommendations.filter(
+      r => r.agent === "BreathingCoachAgent" && r.priority === "high"
+    );
+    if (breathingRecs.length > 0) {
+      setBreathingRec(breathingRecs[0]);
+    }
   }, [navigate]);
 
   if (!profile || !dailyPlan || !todayMetrics || !baseline) {
@@ -94,6 +114,37 @@ export default function Today() {
 
           {/* SECTION 2: What's Coming (Forecasting) */}
           <ShortTermForecast last7Days={last7Days} baseline={baseline} upcomingEvents={upcomingEvents} />
+
+          {/* Breathing Intervention if needed */}
+          {breathingRec && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="shadow-card border-primary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Wind className="w-5 h-5 text-primary" />
+                    Breathing Intervention Needed
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="p-3 bg-primary/5 rounded-lg">
+                    <p className="font-medium text-sm mb-1">{breathingRec.title}</p>
+                    <p className="text-xs text-muted-foreground">{breathingRec.rationale}</p>
+                  </div>
+                  <Button 
+                    className="w-full" 
+                    onClick={() => navigate('/breathing')}
+                  >
+                    <Wind className="w-4 h-4 mr-2" />
+                    Start Breathing Session
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           {/* SECTION 3: What to Do (Prioritized Actions) */}
           <PrioritizedActions plan={dailyPlan} />

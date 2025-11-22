@@ -147,3 +147,37 @@ export function loadCalendarEvents(): CalendarEvent[] {
   }
   return JSON.parse(stored);
 }
+
+// Breathing Sessions
+const BREATHING_SESSIONS_KEY = "healthtwin_breathing_sessions";
+
+export interface BreathingSession {
+  id: string;
+  type: "coherent" | "box" | "478";
+  duration: number; // in seconds
+  completedAt: string;
+  cyclesCompleted: number;
+}
+
+export function loadBreathingSessions(): BreathingSession[] {
+  const stored = localStorage.getItem(BREATHING_SESSIONS_KEY);
+  return stored ? JSON.parse(stored) : [];
+}
+
+export function saveBreathingSession(session: BreathingSession) {
+  const sessions = loadBreathingSessions();
+  sessions.push(session);
+  localStorage.setItem(BREATHING_SESSIONS_KEY, JSON.stringify(sessions));
+}
+
+export function getTodayBreathingSessions(): BreathingSession[] {
+  const sessions = loadBreathingSessions();
+  const today = new Date().toDateString();
+  return sessions.filter(s => new Date(s.completedAt).toDateString() === today);
+}
+
+// Baseline calculation helper
+export function loadBaseline(metrics: DailyMetrics[]): any {
+  const { computeBaseline } = require("./agentLoop");
+  return computeBaseline(metrics);
+}

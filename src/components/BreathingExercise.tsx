@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wind, Play, Pause, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { saveBreathingSession } from "@/lib/storage";
 
 type BreathingExerciseProps = {
   type: "coherent" | "box" | "478";
   duration?: number; // in minutes
-  onComplete?: () => void;
+  onComplete?: (durationSeconds: number, cycles: number) => void;
 };
 
 export function BreathingExercise({ type, duration = 5, onComplete }: BreathingExerciseProps) {
@@ -48,7 +49,18 @@ export function BreathingExercise({ type, duration = 5, onComplete }: BreathingE
       setTimeRemaining((t) => {
         if (t <= 1) {
           setIsActive(false);
-          onComplete?.();
+          const durationSeconds = duration * 60;
+          
+          // Save session
+          saveBreathingSession({
+            id: `${type}-${Date.now()}`,
+            type,
+            duration: durationSeconds,
+            completedAt: new Date().toISOString(),
+            cyclesCompleted: cycleCount,
+          });
+          
+          onComplete?.(durationSeconds, cycleCount);
           return 0;
         }
         return t - 1;
