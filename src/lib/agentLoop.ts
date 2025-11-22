@@ -1,7 +1,7 @@
 import { DailyMetrics, UserProfile, Baseline, AgentRecommendation, DailyPlan } from "@/types";
 import { getAgentOrchestrator } from "@/agents/AgentOrchestrator";
 import { AgentContext } from "@/agents/types";
-import { computeBaseline } from "@/lib/metrics";
+import { computeBaseline, computeReadiness, computeBurnoutRisk } from "@/lib/metrics";
 
 // Re-export functions from metrics for backwards compatibility
 export { 
@@ -21,7 +21,6 @@ export function generateDailyPlan(
   last7Days: DailyMetrics[],
   baseline: Baseline
 ): DailyPlan {
-  const { computeReadiness, computeBurnoutRisk } = require("@/lib/metrics");
   const readiness = computeReadiness(today, baseline, last7Days);
   const burnout = computeBurnoutRisk(last7Days, baseline);
 
