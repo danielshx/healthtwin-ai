@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MobileLayout } from "@/components/MobileLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,12 +21,14 @@ type Message = {
 };
 
 export default function Coach() {
+  const location = useLocation();
   const [coachId, setCoachId] = useState<CoachPersonality>("buddy");
   const [showCoachSelector, setShowCoachSelector] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [readiness, setReadiness] = useState(75);
   const [burnoutLevel, setBurnoutLevel] = useState<"Green" | "Yellow" | "Red">("Green");
+  const [triggerProactiveCall, setTriggerProactiveCall] = useState(false);
 
   useEffect(() => {
     const savedCoach = loadCoach();
@@ -45,6 +48,13 @@ export default function Coach() {
       setBurnoutLevel(risk.level);
     }
     
+    // Check if proactive call was triggered
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('proactiveCall') === 'true') {
+      console.log('[Coach] Proactive call detected from URL');
+      setTriggerProactiveCall(true);
+    }
+    
     // Set initial greeting from selected coach
     const coach = COACH_PROFILES[savedCoach];
     setMessages([
@@ -54,7 +64,7 @@ export default function Coach() {
         timestamp: new Date().toISOString(),
       },
     ]);
-  }, []);
+  }, [location.search]);
 
   const coach = COACH_PROFILES[coachId];
 
@@ -176,6 +186,8 @@ export default function Coach() {
             <VoiceAgent 
               readiness={readiness}
               burnoutLevel={burnoutLevel}
+              triggerProactiveCall={triggerProactiveCall}
+              onCallComplete={() => setTriggerProactiveCall(false)}
             />
           </div>
 
