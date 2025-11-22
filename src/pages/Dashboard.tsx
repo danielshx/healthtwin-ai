@@ -10,7 +10,7 @@ import { TwinAvatar } from "@/components/TwinAvatar";
 import { Badge } from "@/components/ui/badge";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PageTransition } from "@/components/PageTransition";
-import { Heart, Activity, Moon, Zap, Flame, Shield, Target, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Heart, Activity, Moon, Zap, Flame, Shield, Target, Calendar as CalendarIcon, Clock, MessageCircle, Video } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -103,16 +103,45 @@ export default function Dashboard() {
                 <TwinAvatar readiness={readiness.score} burnoutLevel={burnoutRisk.level} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Hello, {profile.name}!</h2>
-                <p className="text-muted-foreground">Here's your health snapshot</p>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                  Ready to optimize your health?
+                </h2>
+                <p className="text-foreground/80 font-medium mt-2">Your AI coach is standing by</p>
               </div>
+            </motion.div>
+
+            {/* Coach CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="grid grid-cols-2 gap-3"
+            >
+              <Button
+                onClick={() => navigate("/coach")}
+                className="h-auto py-4 bg-gradient-to-br from-primary to-primary-glow hover:shadow-glow transition-all duration-300"
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <MessageCircle className="w-6 h-6" />
+                  <span className="font-semibold">Chat with Coach</span>
+                </div>
+              </Button>
+              <Button
+                onClick={() => navigate("/coach")}
+                className="h-auto py-4 bg-gradient-to-br from-secondary to-accent hover:shadow-glow transition-all duration-300"
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Video className="w-6 h-6" />
+                  <span className="font-semibold">Video Call</span>
+                </div>
+              </Button>
             </motion.div>
 
             {/* Readiness Score */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.15 }}
             >
               <Card className="shadow-card bg-gradient-wellness text-white">
                 <CardContent className="pt-6">
@@ -141,7 +170,7 @@ export default function Dashboard() {
 
             {/* Quick Metrics Grid */}
             <div className="grid grid-cols-2 gap-3">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                 <Card className="shadow-soft">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -155,7 +184,7 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
                 <Card className="shadow-soft">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -169,7 +198,7 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <Card className="shadow-soft">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -183,7 +212,7 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                 <Card className="shadow-soft">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -200,7 +229,7 @@ export default function Dashboard() {
 
             {/* Quick Navigation Cards */}
             <div className="grid grid-cols-2 gap-3">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
                 <Card 
                   className="shadow-card cursor-pointer hover:shadow-lg transition-shadow"
                   onClick={() => navigate("/today")}
@@ -235,7 +264,7 @@ export default function Dashboard() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.42 }}
+                transition={{ delay: 0.5 }}
               >
                 <Card className="shadow-card">
                   <CardContent className="pt-6">
@@ -289,7 +318,7 @@ export default function Dashboard() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
+                transition={{ delay: 0.55 }}
               >
                 <Card className="shadow-card">
                   <CardContent className="pt-6">
