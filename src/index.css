@@ -57,7 +57,7 @@ All colors MUST be HSL.
     /* Shadows */
     --shadow-soft: 0 2px 20px -5px hsl(270 20% 20% / 0.08);
     --shadow-card: 0 4px 30px -8px hsl(270 20% 20% / 0.12);
-    --shadow-glow: 0 0 30px hsl(280 70% 70% / 0.3);
+    --shadow-glow: 0 0 40px hsl(280 70% 70% / 0.4);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,7 +105,7 @@ All colors MUST be HSL.
 
     --shadow-soft: 0 2px 20px -5px hsl(0 0% 0% / 0.4);
     --shadow-card: 0 4px 30px -8px hsl(0 0% 0% / 0.5);
-    --shadow-glow: 0 0 30px hsl(280 65% 75% / 0.35);
+    --shadow-glow: 0 0 40px hsl(280 65% 75% / 0.5);
   }
 }
 
@@ -116,6 +116,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    scroll-behavior: smooth;
   }
 
   /* Mobile-specific styles */

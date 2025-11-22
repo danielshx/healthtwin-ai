@@ -92,266 +92,177 @@ export default function Dashboard() {
     <MobileLayout title="HealthTwin">
       <PullToRefresh onRefresh={handleRefresh}>
         <PageTransition>
-          <div className="px-4 py-6 space-y-6">
+          <div className="px-4 py-6 space-y-6 bg-gradient-to-b from-background via-primary/5 to-background">
             {/* Hero Section */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center space-y-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-center space-y-6 pt-4"
             >
-              <div className="flex justify-center">
-                <TwinAvatar readiness={readiness.score} burnoutLevel={burnoutRisk.level} />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                  Ready to optimize your health?
-                </h2>
-                <p className="text-foreground/80 font-medium mt-2">Your AI coach is standing by</p>
-              </div>
+              <motion.div 
+                className="flex justify-center"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 blur-2xl rounded-full animate-pulse" />
+                  <TwinAvatar readiness={readiness.score} burnoutLevel={burnoutRisk.level} />
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-2">
+                  Your AI Health Coach
+                </h1>
+                <p className="text-lg text-foreground/70">Optimize your wellness, effortlessly</p>
+              </motion.div>
             </motion.div>
 
             {/* Coach CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid grid-cols-2 gap-3"
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="grid grid-cols-2 gap-4 px-2"
             >
               <Button
                 onClick={() => navigate("/coach")}
-                className="h-auto py-4 bg-gradient-to-br from-primary to-primary-glow hover:shadow-glow transition-all duration-300"
+                className="h-24 bg-gradient-to-br from-primary to-primary-glow hover:shadow-glow hover:scale-105 transition-all duration-300 border-2 border-primary-glow/20"
               >
                 <div className="flex flex-col items-center gap-2">
-                  <MessageCircle className="w-6 h-6" />
-                  <span className="font-semibold">Chat with Coach</span>
+                  <MessageCircle className="w-7 h-7" />
+                  <span className="font-bold text-base">Chat</span>
                 </div>
               </Button>
               <Button
                 onClick={() => navigate("/coach")}
-                className="h-auto py-4 bg-gradient-to-br from-secondary to-accent hover:shadow-glow transition-all duration-300"
+                className="h-24 bg-gradient-to-br from-secondary to-accent hover:shadow-glow hover:scale-105 transition-all duration-300 border-2 border-accent/20"
               >
                 <div className="flex flex-col items-center gap-2">
-                  <Video className="w-6 h-6" />
-                  <span className="font-semibold">Video Call</span>
+                  <Video className="w-7 h-7" />
+                  <span className="font-bold text-base">Video Call</span>
                 </div>
               </Button>
             </motion.div>
 
             {/* Readiness Score */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <Card className="shadow-card bg-gradient-wellness text-white">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Activity className="w-5 h-5" />
-                      <span className="font-medium">Readiness</span>
-                    </div>
-                    <Badge className="bg-white/20 text-white border-white/30">Today</Badge>
+              <Card className="shadow-glow bg-gradient-to-br from-primary via-primary-glow to-secondary text-white border-0 overflow-hidden relative">
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+                <CardContent className="pt-6 pb-6 relative z-10">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Activity className="w-6 h-6" />
+                    <span className="font-bold text-lg">Today's Readiness</span>
                   </div>
                   <div className="text-center">
-                    <div className="text-6xl font-bold mb-2">{readiness.score}</div>
-                    <div className="text-sm opacity-90 mb-4">out of 100</div>
-                    <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="text-7xl font-bold mb-2"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 1, duration: 0.6, type: "spring" }}
+                    >
+                      {readiness.score}
+                    </motion.div>
+                    <div className="h-3 bg-white/20 rounded-full overflow-hidden mb-3">
                       <motion.div
-                        className="h-full bg-white rounded-full"
+                        className="h-full bg-white rounded-full shadow-glow"
                         initial={{ width: 0 }}
                         animate={{ width: `${readiness.score}%` }}
-                        transition={{ duration: 1, delay: 0.2 }}
+                        transition={{ duration: 1.5, delay: 1.2, ease: "easeOut" }}
                       />
                     </div>
+                    <p className="text-sm opacity-90">You're ready to perform at your best</p>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <Card className="shadow-soft">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
-                        <Moon className="w-4 h-4 text-accent" />
-                      </div>
-                      <span className="text-xs text-muted-foreground">Sleep</span>
-                    </div>
-                    <div className="text-2xl font-bold">{todayMetrics.sleepHours.toFixed(1)}<span className="text-sm text-muted-foreground ml-1">hrs</span></div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+            <motion.div 
+              className="grid grid-cols-4 gap-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: 0.6 }}
+            >
+              <Card className="shadow-soft hover:shadow-card transition-shadow">
+                <CardContent className="pt-4 pb-4 text-center">
+                  <Moon className="w-5 h-5 text-accent mx-auto mb-2" />
+                  <div className="text-xl font-bold">{todayMetrics.sleepHours.toFixed(1)}</div>
+                  <div className="text-xs text-muted-foreground">hrs</div>
+                </CardContent>
+              </Card>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                <Card className="shadow-soft">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Activity className="w-4 h-4 text-primary" />
-                      </div>
-                      <span className="text-xs text-muted-foreground">HRV</span>
-                    </div>
-                    <div className="text-2xl font-bold">{todayMetrics.hrv.toFixed(0)}<span className="text-sm text-muted-foreground ml-1">ms</span></div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <Card className="shadow-soft hover:shadow-card transition-shadow">
+                <CardContent className="pt-4 pb-4 text-center">
+                  <Activity className="w-5 h-5 text-primary mx-auto mb-2" />
+                  <div className="text-xl font-bold">{todayMetrics.hrv.toFixed(0)}</div>
+                  <div className="text-xs text-muted-foreground">HRV</div>
+                </CardContent>
+              </Card>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <Card className="shadow-soft">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center">
-                        <Heart className="w-4 h-4 text-destructive" />
-                      </div>
-                      <span className="text-xs text-muted-foreground">Resting HR</span>
-                    </div>
-                    <div className="text-2xl font-bold">{todayMetrics.restingHr.toFixed(0)}<span className="text-sm text-muted-foreground ml-1">bpm</span></div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <Card className="shadow-soft hover:shadow-card transition-shadow">
+                <CardContent className="pt-4 pb-4 text-center">
+                  <Heart className="w-5 h-5 text-destructive mx-auto mb-2" />
+                  <div className="text-xl font-bold">{todayMetrics.restingHr.toFixed(0)}</div>
+                  <div className="text-xs text-muted-foreground">bpm</div>
+                </CardContent>
+              </Card>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                <Card className="shadow-soft">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
-                        <Zap className="w-4 h-4 text-secondary" />
-                      </div>
-                      <span className="text-xs text-muted-foreground">Energy</span>
-                    </div>
-                    <div className="text-2xl font-bold">{todayMetrics.energyScore}<span className="text-sm text-muted-foreground ml-1">/5</span></div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
+              <Card className="shadow-soft hover:shadow-card transition-shadow">
+                <CardContent className="pt-4 pb-4 text-center">
+                  <Zap className="w-5 h-5 text-secondary mx-auto mb-2" />
+                  <div className="text-xl font-bold">{todayMetrics.energyScore}</div>
+                  <div className="text-xs text-muted-foreground">/5</div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            {/* Quick Navigation Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-                <Card 
-                  className="shadow-card cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate("/today")}
-                >
-                  <CardContent className="pt-6 pb-6 text-center">
-                    <Target className="w-8 h-8 mx-auto mb-2 text-primary" />
-                    <p className="font-semibold mb-1">Today's Plan</p>
-                    <p className="text-xs text-muted-foreground">Your priorities</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <Card 
-                  className="shadow-card cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate("/recovery")}
-                >
-                  <CardContent className="pt-6 pb-6 text-center">
-                    <Shield className={`w-8 h-8 mx-auto mb-2 ${
-                      burnoutRisk.level === "Green" ? "text-success" :
-                      burnoutRisk.level === "Yellow" ? "text-warning" : "text-destructive"
-                    }`} />
-                    <p className="font-semibold mb-1">Recovery</p>
-                    <Badge className="text-xs">{burnoutRisk.level}</Badge>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-
-            {/* Today's Calendar */}
-            {todayEvents.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+            {/* Feature Highlights */}
+            <motion.div 
+              className="grid grid-cols-3 gap-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.8, duration: 0.6 }}
+            >
+              <Card 
+                className="shadow-card cursor-pointer hover:scale-105 hover:shadow-glow transition-all bg-gradient-to-br from-primary/10 to-transparent"
+                onClick={() => navigate("/nutrition")}
               >
-                <Card className="shadow-card">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="w-5 h-5 text-primary" />
-                        <h3 className="font-bold">Today's Schedule</h3>
-                      </div>
-                      <Badge variant="secondary">{todayEvents.length} events</Badge>
-                    </div>
-                    <div className="space-y-2 mb-4">
-                      {todayEvents.slice(0, 3).map((event) => {
-                        const isPast = new Date(event.start) < new Date();
-                        return (
-                          <div
-                            key={event.id}
-                            className={`p-2 rounded-lg flex items-start gap-2 ${
-                              isPast ? "bg-muted/30 opacity-60" : "bg-primary/5"
-                            }`}
-                          >
-                            <Clock className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{event.title}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(event.start).toLocaleTimeString("en-US", {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                })}
-                                {event.end && (
-                                  <> - {new Date(event.end).toLocaleTimeString("en-US", {
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                  })}</>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <Button variant="outline" className="w-full" onClick={() => navigate("/calendar")}>
-                      View Full Calendar
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+                <CardContent className="pt-5 pb-5 text-center">
+                  <Flame className="w-7 h-7 mx-auto mb-2 text-primary" />
+                  <p className="font-bold text-sm">Nutrition</p>
+                </CardContent>
+              </Card>
 
-            {/* AI Suggestions Preview */}
-            {recommendations.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
+              <Card 
+                className="shadow-card cursor-pointer hover:scale-105 hover:shadow-glow transition-all bg-gradient-to-br from-accent/10 to-transparent"
+                onClick={() => navigate("/recovery")}
               >
-                <Card className="shadow-card">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <Flame className="w-5 h-5 text-primary" />
-                        <h3 className="font-bold">AI Suggestions</h3>
-                      </div>
-                      <Badge variant="secondary">{recommendations.length}</Badge>
-                    </div>
-                    <div className="space-y-3 mb-4">
-                      {recommendations.slice(0, 3).map((rec) => (
-                        <div key={rec.id} className="p-3 bg-muted/30 rounded-lg">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <p className="text-sm font-semibold flex-1">{rec.title}</p>
-                            <Badge 
-                              variant={rec.priority === "high" ? "destructive" : rec.priority === "medium" ? "default" : "secondary"}
-                              className="text-xs"
-                            >
-                              {rec.priority}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground">{rec.rationale}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <Button className="w-full" onClick={() => navigate("/coach")}>
-                      Chat with Coach
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+                <CardContent className="pt-5 pb-5 text-center">
+                  <Shield className="w-7 h-7 mx-auto mb-2 text-accent" />
+                  <p className="font-bold text-sm">Recovery</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="shadow-card cursor-pointer hover:scale-105 hover:shadow-glow transition-all bg-gradient-to-br from-secondary/10 to-transparent"
+                onClick={() => navigate("/insights")}
+              >
+                <CardContent className="pt-5 pb-5 text-center">
+                  <Target className="w-7 h-7 mx-auto mb-2 text-secondary" />
+                  <p className="font-bold text-sm">Insights</p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
             <div className="h-20" />
           </div>
