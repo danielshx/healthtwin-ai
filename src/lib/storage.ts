@@ -1,6 +1,6 @@
 import { UserProfile, DailyMetrics, AgentRecommendation, Feedback, CheckIn, Achievement, CalendarEvent } from "@/types";
 import { CoachPersonality } from "@/types/coach";
-import { generateMockMetrics, getDefaultProfile } from "./mockData";
+import { generateMockMetrics, getDefaultProfile, generateMockCalendar } from "./mockData";
 
 const STORAGE_KEYS = {
   PROFILE: "healthtwin_profile",
@@ -139,5 +139,11 @@ export function saveCalendarEvents(events: CalendarEvent[]) {
 
 export function loadCalendarEvents(): CalendarEvent[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CALENDAR);
-  return stored ? JSON.parse(stored) : [];
+  if (!stored) {
+    // Generate and save mock calendar on first load
+    const mockCalendar = generateMockCalendar();
+    saveCalendarEvents(mockCalendar);
+    return mockCalendar;
+  }
+  return JSON.parse(stored);
 }

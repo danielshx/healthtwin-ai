@@ -1,21 +1,28 @@
 import { useEffect, useState } from "react";
-import { loadMetrics } from "@/lib/storage";
-import { DailyMetrics } from "@/types";
+import { loadMetrics, loadCalendarEvents } from "@/lib/storage";
+import { DailyMetrics, CalendarEvent } from "@/types";
 import { MobileLayout } from "@/components/MobileLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageTransition } from "@/components/PageTransition";
+import { CalendarIntegrationCard } from "@/components/CalendarIntegrationCard";
 import { Activity, Moon, Brain, Dumbbell } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
 
 export default function Insights() {
   const [metrics, setMetrics] = useState<DailyMetrics[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [period, setPeriod] = useState<"7" | "30">("7");
 
   useEffect(() => {
     const allMetrics = loadMetrics();
     setMetrics(allMetrics);
+    
+    const allEvents = loadCalendarEvents();
+    const now = new Date();
+    const futureEvents = allEvents.filter((e) => new Date(e.start) > now);
+    setEvents(futureEvents);
   }, []);
 
   const data = metrics.slice(period === "7" ? -7 : -30).map((m) => ({
@@ -223,6 +230,16 @@ export default function Insights() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Calendar Impact */}
+        <CalendarIntegrationCard 
+          events={events}
+          impact={{
+            sleepRecommendation: "Early events detected - sleep timer adjusted automatically",
+            stressWarning: parseFloat(avgStress) > 60 ? "High stress period - training intensity reduced" : undefined,
+            trainingAdjustment: "Workout schedule synchronized with recovery needs",
+          }}
+        />
       </div>
       </PageTransition>
     </MobileLayout>

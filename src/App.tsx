@@ -13,6 +13,7 @@ import Predictions from "./pages/Predictions";
 import Breathing from "./pages/Breathing";
 import Streaks from "./pages/Streaks";
 import Advanced from "./pages/Advanced";
+import CalendarView from "./pages/CalendarView";
 import Timeline from "./pages/Timeline";
 import Insights from "./pages/Insights";
 import Coach from "./pages/Coach";
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/breathing" element={<Breathing />} />
           <Route path="/streaks" element={<Streaks />} />
           <Route path="/advanced" element={<Advanced />} />
+          <Route path="/calendar" element={<CalendarView />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/coach" element={<Coach />} />

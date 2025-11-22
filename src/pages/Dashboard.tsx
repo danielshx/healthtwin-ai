@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loadProfile, loadMetrics, loadRecommendations, saveRecommendations } from "@/lib/storage";
+import { loadProfile, loadMetrics, loadRecommendations, saveRecommendations, loadCalendarEvents } from "@/lib/storage";
 import { computeBaseline, computeReadiness, computeBurnoutRisk, generateRecommendations } from "@/lib/agentLoop";
-import { UserProfile, DailyMetrics, AgentRecommendation, ReadinessScore, BurnoutRisk } from "@/types";
+import { UserProfile, DailyMetrics, AgentRecommendation, ReadinessScore, BurnoutRisk, CalendarEvent } from "@/types";
 import { MobileLayout } from "@/components/MobileLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { TwinAvatar } from "@/components/TwinAvatar";
 import { Badge } from "@/components/ui/badge";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { PageTransition } from "@/components/PageTransition";
-import { Heart, Activity, Moon, Zap, Flame, Shield, Target } from "lucide-react";
+import { Heart, Activity, Moon, Zap, Flame, Shield, Target, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [readiness, setReadiness] = useState<ReadinessScore | null>(null);
   const [burnoutRisk, setBurnoutRisk] = useState<BurnoutRisk | null>(null);
   const [recommendations, setRecommendations] = useState<AgentRecommendation[]>([]);
+  const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -47,14 +48,22 @@ export default function Dashboard() {
     setBurnoutRisk(risk);
 
     let recs = loadRecommendations();
-    const todayStr = new Date().toISOString().split("T")[0];
-    const hasRecsToday = recs.some((r) => r.createdAt.startsWith(todayStr));
+    const recTodayStr = new Date().toISOString().split("T")[0];
+    const hasRecsToday = recs.some((r) => r.createdAt.startsWith(recTodayStr));
     if (!hasRecsToday) {
       const newRecs = generateRecommendations(prof, today, last7, baseline);
       recs = [...recs, ...newRecs];
       saveRecommendations(recs);
     }
     setRecommendations(recs.slice(-10));
+
+    // Load today's calendar events
+    const allEvents = loadCalendarEvents();
+    const todayStr = new Date().toISOString().split("T")[0];
+    const eventsToday = allEvents
+      .filter((event) => event.start.startsWith(todayStr))
+      .sort((a, b) => a.start.localeCompare(b.start));
+    setTodayEvents(eventsToday);
   }, [navigate]);
 
   const handleRefresh = async () => {
@@ -216,6 +225,60 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
             </div>
+
+            {/* Today's Calendar */}
+            {todayEvents.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.42 }}
+              >
+                <Card className="shadow-card">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="w-5 h-5 text-primary" />
+                        <h3 className="font-bold">Today's Schedule</h3>
+                      </div>
+                      <Badge variant="secondary">{todayEvents.length} events</Badge>
+                    </div>
+                    <div className="space-y-2 mb-4">
+                      {todayEvents.slice(0, 3).map((event) => {
+                        const isPast = new Date(event.start) < new Date();
+                        return (
+                          <div
+                            key={event.id}
+                            className={`p-2 rounded-lg flex items-start gap-2 ${
+                              isPast ? "bg-muted/30 opacity-60" : "bg-primary/5"
+                            }`}
+                          >
+                            <Clock className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{event.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(event.start).toLocaleTimeString("en-US", {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                })}
+                                {event.end && (
+                                  <> - {new Date(event.end).toLocaleTimeString("en-US", {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                  })}</>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <Button variant="outline" className="w-full" onClick={() => navigate("/calendar")}>
+                      View Full Calendar
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
 
             {/* AI Suggestions Preview */}
             {recommendations.length > 0 && (
