@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Target, Shield, MessageCircle, MoreHorizontal, TrendingUp, Activity, BarChart3, Users, Moon } from "lucide-react";
+import { Home, Target, Shield, MessageCircle, MoreHorizontal, TrendingUp, Activity, BarChart3, Users, Moon, Wind, Flame, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -21,9 +21,13 @@ const mainNavItems = [
 
 const moreNavItems = [
   { path: "/sleep-negotiator", icon: Moon, label: "Sleep Timer" },
+  { path: "/predictions", icon: TrendingUp, label: "Predictions" },
+  { path: "/breathing", icon: Wind, label: "Breathing" },
+  { path: "/streaks", icon: Flame, label: "Streaks" },
+  { path: "/advanced", icon: Zap, label: "Advanced" },
   { path: "/timeline", icon: Activity, label: "Timeline" },
   { path: "/insights", icon: BarChart3, label: "Insights" },
-  { path: "/simulate", icon: TrendingUp, label: "What-If" },
+  { path: "/simulate", icon: Activity, label: "What-If" },
   { path: "/social", icon: Users, label: "Social" },
 ];
 

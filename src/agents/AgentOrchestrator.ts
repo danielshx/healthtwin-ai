@@ -4,6 +4,12 @@ import { PlannerAgent } from "./PlannerAgent";
 import { SleepAgent } from "./SleepAgent";
 import { FitnessCoachAgent } from "./FitnessCoachAgent";
 import { BurnoutGuardianAgent } from "./BurnoutGuardianAgent";
+import { PredictiveAnalyticsAgent } from "./PredictiveAnalyticsAgent";
+import { ContextAwarenessAgent } from "./ContextAwarenessAgent";
+import { BreathingCoachAgent } from "./BreathingCoachAgent";
+import { SleepEnvironmentAgent } from "./SleepEnvironmentAgent";
+import { RecoveryPredictionAgent } from "./RecoveryPredictionAgent";
+import { InjuryRiskAgent } from "./InjuryRiskAgent";
 
 /**
  * Central orchestrator that manages all AI agents
@@ -38,6 +44,12 @@ export class AgentOrchestrator {
     this.registerAgent(new SleepAgent());
     this.registerAgent(new FitnessCoachAgent());
     this.registerAgent(new BurnoutGuardianAgent());
+    this.registerAgent(new PredictiveAnalyticsAgent());
+    this.registerAgent(new ContextAwarenessAgent());
+    this.registerAgent(new BreathingCoachAgent());
+    this.registerAgent(new SleepEnvironmentAgent());
+    this.registerAgent(new RecoveryPredictionAgent());
+    this.registerAgent(new InjuryRiskAgent());
   }
 
   /**

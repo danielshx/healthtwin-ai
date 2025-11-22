@@ -24,7 +24,17 @@ export type DailyMetrics = {
   notes?: string;
 };
 
-export type AgentType = "PlannerAgent" | "SleepAgent" | "FitnessCoachAgent" | "BurnoutGuardianAgent";
+export type AgentType = 
+  | "PlannerAgent" 
+  | "SleepAgent" 
+  | "FitnessCoachAgent" 
+  | "BurnoutGuardianAgent"
+  | "PredictiveAnalyticsAgent"
+  | "ContextAwarenessAgent"
+  | "BreathingCoachAgent"
+  | "SleepEnvironmentAgent"
+  | "RecoveryPredictionAgent"
+  | "InjuryRiskAgent";
 
 export type AgentRecommendation = {
   id: string;
@@ -115,4 +125,91 @@ export type CalendarEvent = {
   description?: string;
   location?: string;
   allDay?: boolean;
+};
+
+export type BurnoutPrediction = {
+  date: string; // YYYY-MM-DD
+  riskLevel: "Low" | "Medium" | "High" | "Critical";
+  probability: number; // 0-100
+  factors: string[];
+  preventiveActions: string[];
+};
+
+export type ContextData = {
+  weather?: {
+    temp: number;
+    condition: string;
+    humidity: number;
+  };
+  location?: string;
+  timeOfDay: "morning" | "afternoon" | "evening" | "night";
+  season: string;
+};
+
+export type SleepEnvironment = {
+  date: string;
+  temperature: number; // celsius
+  humidity: number; // percentage
+  noise: number; // 0-100
+  light: number; // 0-100 (lux equivalent)
+  airQuality: number; // 0-100
+};
+
+export type RecoveryPrediction = {
+  date: string;
+  fullRecoveryDate: string;
+  currentRecoveryPercent: number; // 0-100
+  factors: string[];
+  deloadWeekRecommended: boolean;
+};
+
+export type BiomarkerTrend = {
+  metric: string;
+  trend: "improving" | "stable" | "declining";
+  story: string;
+  startDate: string;
+  endDate: string;
+  recommendation: string;
+};
+
+export type Integration = {
+  id: string;
+  name: string;
+  type: "calendar" | "task" | "music" | "food" | "wearable";
+  connected: boolean;
+  lastSync?: string;
+  config?: any;
+};
+
+export type Streak = {
+  type: "sleep" | "workout" | "checkin" | "recovery";
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityDate: string;
+};
+
+export type WearableData = {
+  timestamp: string;
+  hrv: number;
+  heartRate: number;
+  isLive: boolean;
+};
+
+export type InjuryRisk = {
+  level: "Low" | "Medium" | "High" | "Critical";
+  score: number; // 0-100
+  factors: string[];
+  preventiveActions: string[];
+  affectedAreas: string[];
+};
+
+export type SmartNotification = {
+  id: string;
+  type: "reminder" | "alert" | "tip" | "achievement";
+  title: string;
+  message: string;
+  priority: "low" | "medium" | "high";
+  scheduledFor: string;
+  delivered: boolean;
+  context?: ContextData;
 };

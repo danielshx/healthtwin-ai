@@ -9,6 +9,10 @@ import Onboarding from "./pages/Onboarding";
 import Today from "./pages/Today";
 import Recovery from "./pages/Recovery";
 import SleepNegotiator from "./pages/SleepNegotiator";
+import Predictions from "./pages/Predictions";
+import Breathing from "./pages/Breathing";
+import Streaks from "./pages/Streaks";
+import Advanced from "./pages/Advanced";
 import Timeline from "./pages/Timeline";
 import Insights from "./pages/Insights";
 import Coach from "./pages/Coach";
@@ -38,6 +42,10 @@ const App = () => (
           <Route path="/today" element={<Today />} />
           <Route path="/recovery" element={<Recovery />} />
           <Route path="/sleep-negotiator" element={<SleepNegotiator />} />
+          <Route path="/predictions" element={<Predictions />} />
+          <Route path="/breathing" element={<Breathing />} />
+          <Route path="/streaks" element={<Streaks />} />
+          <Route path="/advanced" element={<Advanced />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/coach" element={<Coach />} />
