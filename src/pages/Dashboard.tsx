@@ -264,6 +264,38 @@ export default function Dashboard() {
               </Card>
             </motion.div>
 
+            {/* AI Suggestions */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.1, duration: 0.6 }}
+            >
+              <Card className="shadow-card bg-gradient-to-br from-primary/5 to-transparent">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Flame className="w-6 h-6 text-primary" />
+                    <h3 className="font-bold text-lg">AI Suggestions</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {recommendations.slice(0, 3).map((rec) => (
+                      <div key={rec.id} className="p-3 bg-background/80 rounded-lg backdrop-blur-sm">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className="text-sm font-semibold flex-1">{rec.title}</p>
+                          <Badge 
+                            variant={rec.priority === "high" ? "destructive" : rec.priority === "medium" ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {rec.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{rec.rationale}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
             <div className="h-20" />
           </div>
         </PageTransition>
