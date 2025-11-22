@@ -289,18 +289,31 @@ export default function Dashboard() {
               >
                 <Card className="shadow-card">
                   <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Flame className="w-5 h-5 text-primary" />
                         <h3 className="font-bold">AI Suggestions</h3>
                       </div>
                       <Badge variant="secondary">{recommendations.length}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {recommendations[0]?.title}
-                    </p>
+                    <div className="space-y-3 mb-4">
+                      {recommendations.slice(0, 3).map((rec) => (
+                        <div key={rec.id} className="p-3 bg-muted/30 rounded-lg">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <p className="text-sm font-semibold flex-1">{rec.title}</p>
+                            <Badge 
+                              variant={rec.priority === "high" ? "destructive" : rec.priority === "medium" ? "default" : "secondary"}
+                              className="text-xs"
+                            >
+                              {rec.priority}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{rec.rationale}</p>
+                        </div>
+                      ))}
+                    </div>
                     <Button className="w-full" onClick={() => navigate("/coach")}>
-                      View All Suggestions
+                      Chat with Coach
                     </Button>
                   </CardContent>
                 </Card>

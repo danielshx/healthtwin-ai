@@ -67,9 +67,9 @@ export function generateDailyPlan(
   // Sleep advice
   const sleepDebt = baseline.sleepHours * 7 - last7Days.reduce((sum, m) => sum + m.sleepHours, 0);
   if (sleepDebt > 3) {
-    sleepAdvice = `You have ${sleepDebt.toFixed(1)}hrs sleep debt. Aim for ${baseline.sleepHours + 0.5}hrs tonight.`;
+    sleepAdvice = `You have ${sleepDebt.toFixed(1)}hrs sleep debt. Aim for ${(baseline.sleepHours + 0.5).toFixed(1)}hrs tonight.`;
   } else {
-    sleepAdvice = `Sleep debt minimal. Maintain ${baseline.sleepHours}hrs tonight.`;
+    sleepAdvice = `Sleep debt minimal. Maintain ${baseline.sleepHours.toFixed(1)}hrs tonight.`;
   }
 
   if (burnout.level === "Yellow" || burnout.level === "Red") {
