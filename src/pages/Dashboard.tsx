@@ -26,7 +26,6 @@ export default function Dashboard() {
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [recommendations, setRecommendations] = useState<AgentRecommendation[]>([]);
   const [baseline, setBaseline] = useState<Baseline | null>(null);
-  const [showProactiveCall, setShowProactiveCall] = useState(false);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -249,17 +248,16 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          {/* Proactive Monitoring Agent */}
-          {baseline && (
-            <ProactiveMonitor 
-              metrics={metrics}
-              baseline={baseline}
-              onCallInitiated={() => {
-                setShowProactiveCall(true);
-                navigate("/coach?proactiveCall=true");
-              }}
-            />
-          )}
+        {/* Proactive Monitoring Agent */}
+        {baseline && (
+          <ProactiveMonitor 
+            metrics={metrics}
+            baseline={baseline}
+            onCallInitiated={() => {
+              toast.info("Critical health pattern detected. Check your Coach for guidance.");
+            }}
+          />
+        )}
         </motion.div>
 
         {/* Today's Plan */}

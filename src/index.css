@@ -144,4 +144,34 @@ All colors MUST be HSL.
   button, a, input, select, textarea {
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* Toast mobile optimization */
+  [data-sonner-toast] {
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  [data-sonner-toast][data-swiping="true"] {
+    transition: none;
+  }
+
+  [data-sonner-toaster] {
+    pointer-events: all;
+  }
+
+  /* Make toasts more touch-friendly on mobile */
+  @media (max-width: 640px) {
+    [data-sonner-toast] {
+      min-height: 4rem;
+      padding: 1rem;
+      margin: 0.5rem;
+      width: calc(100vw - 2rem);
+      max-width: calc(100vw - 2rem);
+    }
+
+    [data-sonner-toaster] {
+      width: 100%;
+    }
+  }
 }
