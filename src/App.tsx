@@ -19,6 +19,7 @@ import Insights from "./pages/Insights";
 import Coach from "./pages/Coach";
 import Simulate from "./pages/Simulate";
 import Social from "./pages/Social";
+import Nutrition from "./pages/Nutrition";
 import Install from "./pages/Install";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/coach" element={<Coach />} />
           <Route path="/simulate" element={<Simulate />} />
           <Route path="/social" element={<Social />} />
+          <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/install" element={<Install />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Target, Shield, MessageCircle, MoreHorizontal, TrendingUp, Activity, BarChart3, Users, Moon, Wind, Flame, Zap, Calendar } from "lucide-react";
+import { Home, Target, Shield, MessageCircle, MoreHorizontal, TrendingUp, Activity, BarChart3, Users, Moon, Wind, Flame, Zap, Calendar, Apple } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -20,6 +20,7 @@ const mainNavItems = [
 ];
 
 const moreNavItems = [
+  { path: "/nutrition", icon: Apple, label: "Nutrition" },
   { path: "/calendar", icon: Calendar, label: "Calendar" },
   { path: "/predictions", icon: TrendingUp, label: "Predictions" },
   { path: "/breathing", icon: Wind, label: "Breathing" },

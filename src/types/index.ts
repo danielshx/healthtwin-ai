@@ -22,6 +22,33 @@ export type DailyMetrics = {
   moodScore: number; // 1-5
   energyScore: number; // 1-5
   notes?: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fats?: number;
+  water?: number; // liters
+};
+
+export type NutritionGoals = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  water: number;
+};
+
+export type FoodRecommendation = {
+  id: string;
+  name: string;
+  description: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  category: "breakfast" | "lunch" | "dinner" | "snack";
+  prepTime: number; // minutes
+  difficulty: "easy" | "medium" | "hard";
+  ingredients: string[];
 };
 
 export type AgentType = 
@@ -35,6 +62,7 @@ export type AgentType =
   | "SleepEnvironmentAgent"
   | "RecoveryPredictionAgent"
   | "InjuryRiskAgent"
+  | "NutritionAgent"
   | "AWSBedrockAgent";
 
 export type AgentRecommendation = {
