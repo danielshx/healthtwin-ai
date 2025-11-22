@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CoachSelector } from "@/components/CoachSelector";
+import { VoiceAgent } from "@/components/VoiceAgent";
 import { PageTransition } from "@/components/PageTransition";
 import { Send, Settings2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { loadCoach } from "@/lib/storage";
+import { loadCoach, loadMetrics } from "@/lib/storage";
 import { CoachPersonality, COACH_PROFILES } from "@/types/coach";
+import { computeBaseline, computeReadiness, computeBurnoutRisk } from "@/lib/agentLoop";
 
 type Message = {
   role: "user" | "assistant";
@@ -22,10 +24,26 @@ export default function Coach() {
   const [showCoachSelector, setShowCoachSelector] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [readiness, setReadiness] = useState(75);
+  const [burnoutLevel, setBurnoutLevel] = useState<"Green" | "Yellow" | "Red">("Green");
 
   useEffect(() => {
     const savedCoach = loadCoach();
     setCoachId(savedCoach);
+    
+    // Calculate current health metrics
+    const allMetrics = loadMetrics();
+    if (allMetrics.length > 0) {
+      const today = allMetrics[allMetrics.length - 1];
+      const last7 = allMetrics.slice(-7);
+      const baseline = computeBaseline(allMetrics);
+      
+      const ready = computeReadiness(today, baseline, last7);
+      const risk = computeBurnoutRisk(last7, baseline);
+      
+      setReadiness(ready.score);
+      setBurnoutLevel(risk.level);
+    }
     
     // Set initial greeting from selected coach
     const coach = COACH_PROFILES[savedCoach];
@@ -152,6 +170,14 @@ export default function Coach() {
               </Button>
             </div>
           </motion.div>
+
+          {/* Voice Agent Card */}
+          <div className="p-4">
+            <VoiceAgent 
+              readiness={readiness}
+              burnoutLevel={burnoutLevel}
+            />
+          </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
