@@ -177,88 +177,134 @@ export const encodeAudioForAPI = (float32Array: Float32Array): string => {
 };
 
 export class RealtimeVoiceChat {
-  private ws: WebSocket | null = null;
-  private recorder: AudioRecorder | null = null;
-  private audioContext: AudioContext | null = null;
-  private audioQueue: AudioQueue | null = null;
+  private pc: RTCPeerConnection | null = null;
+  private dc: RTCDataChannel | null = null;
+  private audioEl: HTMLAudioElement;
   private isConnected = false;
 
   constructor(
     private onMessage: (event: any) => void,
     private onConnectionChange: (connected: boolean) => void
-  ) {}
+  ) {
+    this.audioEl = document.createElement("audio");
+    this.audioEl.autoplay = true;
+  }
 
   async connect() {
     try {
-      console.log('[RealtimeVoiceChat] Connecting to voice service...');
+      console.log('[RealtimeVoiceChat] Getting ephemeral token...');
       
-      // Initialize audio context and queue
-      this.audioContext = new AudioContext({ sampleRate: 24000 });
-      this.audioQueue = new AudioQueue(this.audioContext);
+      // Get ephemeral token from edge function
+      const response = await fetch(
+        `https://facfhfdnvbqaafsrfyxh.supabase.co/functions/v1/realtime-voice`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
-      // Connect to WebSocket edge function
-      const wsUrl = `wss://facfhfdnvbqaafsrfyxh.supabase.co/functions/v1/realtime-voice`;
-      this.ws = new WebSocket(wsUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to get token: ${response.statusText}`);
+      }
 
-      this.ws.onopen = async () => {
-        console.log('[RealtimeVoiceChat] WebSocket connected');
+      const data = await response.json();
+      
+      if (!data.client_secret?.value) {
+        throw new Error("Failed to get ephemeral token");
+      }
+
+      const EPHEMERAL_KEY = data.client_secret.value;
+      console.log('[RealtimeVoiceChat] Token received, setting up WebRTC...');
+
+      // Create peer connection
+      this.pc = new RTCPeerConnection();
+
+      // Set up remote audio
+      this.pc.ontrack = e => {
+        console.log('[RealtimeVoiceChat] Received audio track');
+        this.audioEl.srcObject = e.streams[0];
+      };
+
+      // Add local audio track
+      console.log('[RealtimeVoiceChat] Requesting microphone access...');
+      const ms = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          sampleRate: 24000,
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
+      this.pc.addTrack(ms.getTracks()[0]);
+      console.log('[RealtimeVoiceChat] Local audio track added');
+
+      // Set up data channel for events
+      this.dc = this.pc.createDataChannel("oai-events");
+      this.dc.addEventListener("message", (e) => {
+        try {
+          const event = JSON.parse(e.data);
+          console.log(`[RealtimeVoiceChat] Received event: ${event.type}`);
+          this.onMessage(event);
+        } catch (error) {
+          console.error('[RealtimeVoiceChat] Error parsing message:', error);
+        }
+      });
+
+      this.dc.addEventListener("open", () => {
+        console.log('[RealtimeVoiceChat] Data channel opened');
         this.isConnected = true;
         this.onConnectionChange(true);
+      });
 
-        // Start recording
-        this.recorder = new AudioRecorder((audioData) => {
-          if (this.ws?.readyState === WebSocket.OPEN) {
-            this.ws.send(JSON.stringify({
-              type: 'input_audio_buffer.append',
-              audio: encodeAudioForAPI(audioData)
-            }));
-          }
-        });
-
-        await this.recorder.start();
-      };
-
-      this.ws.onmessage = async (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log(`[RealtimeVoiceChat] Received: ${data.type}`);
-          
-          this.onMessage(data);
-
-          // Handle audio playback
-          if (data.type === 'response.audio.delta' && data.delta) {
-            const binaryString = atob(data.delta);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-              bytes[i] = binaryString.charCodeAt(i);
-            }
-            await this.audioQueue?.addToQueue(bytes);
-          }
-        } catch (error) {
-          console.error('[RealtimeVoiceChat] Error handling message:', error);
-        }
-      };
-
-      this.ws.onerror = (error) => {
-        console.error('[RealtimeVoiceChat] WebSocket error:', error);
-      };
-
-      this.ws.onclose = () => {
-        console.log('[RealtimeVoiceChat] WebSocket closed');
+      this.dc.addEventListener("close", () => {
+        console.log('[RealtimeVoiceChat] Data channel closed');
         this.isConnected = false;
         this.onConnectionChange(false);
-        this.cleanup();
+      });
+
+      // Create and set local description
+      const offer = await this.pc.createOffer();
+      await this.pc.setLocalDescription(offer);
+      console.log('[RealtimeVoiceChat] Created offer');
+
+      // Connect to OpenAI's Realtime API
+      const baseUrl = "https://api.openai.com/v1/realtime";
+      const model = "gpt-4o-realtime-preview-2024-12-17";
+      const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+        method: "POST",
+        body: offer.sdp,
+        headers: {
+          Authorization: `Bearer ${EPHEMERAL_KEY}`,
+          "Content-Type": "application/sdp"
+        },
+      });
+
+      if (!sdpResponse.ok) {
+        throw new Error(`Failed to connect: ${sdpResponse.statusText}`);
+      }
+
+      const answer = {
+        type: "answer" as RTCSdpType,
+        sdp: await sdpResponse.text(),
       };
+      
+      await this.pc.setRemoteDescription(answer);
+      console.log('[RealtimeVoiceChat] WebRTC connection established');
 
     } catch (error) {
       console.error('[RealtimeVoiceChat] Connection error:', error);
+      this.isConnected = false;
+      this.onConnectionChange(false);
       throw error;
     }
   }
 
   sendText(text: string) {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.error('[RealtimeVoiceChat] Cannot send - not connected');
+    if (!this.dc || this.dc.readyState !== 'open') {
+      console.error('[RealtimeVoiceChat] Cannot send - data channel not ready');
       return;
     }
 
@@ -269,33 +315,19 @@ export class RealtimeVoiceChat {
       item: {
         type: 'message',
         role: 'user',
-        content: [
-          {
-            type: 'input_text',
-            text
-          }
-        ]
+        content: [{ type: 'input_text', text }]
       }
     };
 
-    this.ws.send(JSON.stringify(event));
-    this.ws.send(JSON.stringify({ type: 'response.create' }));
-  }
-
-  private cleanup() {
-    this.recorder?.stop();
-    this.audioQueue?.clear();
-    this.audioContext?.close();
-    this.recorder = null;
-    this.audioQueue = null;
-    this.audioContext = null;
+    this.dc.send(JSON.stringify(event));
+    this.dc.send(JSON.stringify({ type: 'response.create' }));
   }
 
   disconnect() {
     console.log('[RealtimeVoiceChat] Disconnecting...');
-    this.cleanup();
-    this.ws?.close();
-    this.ws = null;
+    this.dc?.close();
+    this.pc?.close();
+    this.audioEl.srcObject = null;
     this.isConnected = false;
     this.onConnectionChange(false);
   }
